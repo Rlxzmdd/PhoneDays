@@ -15,7 +15,6 @@
       padding-top: 15vh;
       height: 85vh;
       background-color: #f5deb3;
-      /* background-image: url('/mnt/data/C66DDB60-DD2C-460F-A241-AF48F794289F.png'); 背景图片 */
       background-size: cover;
       background-repeat: no-repeat;
     }
@@ -32,21 +31,19 @@
       align-items: center;
       padding: 20px;
       text-align: center;
-      /* border: 2px solid #ccc; 模仿边框 */
     }
 
     .title {
-      /* box-shadow: 0 0px 16px rgba(0, 0, 0, 0.2); */
       top: 0;
       font-size: 22px;
       font-weight: bold;
       color: #333;
       background-color: #3a87ad;
-      color: white;
+      /* color: white; */
       padding: 10px 0;
       width: 100%;
-      /* margin-bottom: 20px; */
       border-radius: 8px;
+      color: #333;
     }
 
     .countdown {
@@ -54,8 +51,7 @@
       font-size: 118px;
       font-weight: bold;
       color: #333;
-      /* margin-bottom: 20px; */
-      font-family:  "Times New Roman", "Baskerville", apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      font-family: "Times New Roman", "Baskerville", apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     }
 
     .target-date {
@@ -92,25 +88,55 @@
 <div class="container">
   <div class="title" id="title">标题</div>
   <div class="countdown" id="days">0</div>
-  <!-- <div class="target-date" id="target-date">目标日</div> -->
-  
-  <!-- <div class="btn-group">
-    <button class="btn">分享</button>
-    <button class="btn">存为图片</button>
-  </div> -->
 </div>
 
 <script>
-  // 获取 URL 中的参数
+const morandiColors = [
+  // [body颜色, title颜色]，body稍微亮一点
+  ['#A89984', '#EAD2C7'], // 棕褐色 和 柔粉色
+  ['#B09C91', '#F0DDD4'], // 浅棕色 和 浅米色
+  ['#B3A69D', '#EADCCF'], // 灰褐色 和 米黄
+  ['#A49E96', '#E6D5C7'], // 浅灰褐 和 奶油米
+  ['#C2B2A8', '#F5E9DD'], // 沙褐色 和 象牙白
+  ['#C3ACA2', '#E8D7CC'], // 亮棕灰色 和 羊绒灰
+  ['#C7B2A3', '#F1E0D0'], // 杏仁色 和 云雾灰
+  ['#B8A18B', '#EBD9CC'], // 蜂蜜米 和 乳白色
+  ['#CAB2A4', '#F5E3D8'], // 浅米红 和 粉白色
+  ['#C4B2A4', '#ECDACD'], // 杏仁灰 和 轻褐色
+  ['#B6A89C', '#E6D5C3'], // 栗棕色 和 柔米白
+  ['#D1B6A9', '#F4E2D6'], // 浅肉桂 和 米白
+  ['#BFA590', '#E5CFC0'], // 蜜橘灰 和 暖象牙
+  ['#C9B1A3', '#F2D9CB'], // 浅棕红 和 粉米色
+  ['#BBA697', '#EEDAC9'], // 香槟灰 和 云绒白
+  ['#D2B59E', '#F8E3D0'], // 米粉灰 和 象牙白
+
+  // 蓝、绿、红、黄主题，body稍亮，title明亮
+  ['#5A7690', '#A9C8E8'], // 浅蓝灰色 和 浅蓝色
+  ['#769B8A', '#B8DFC1'], // 浅橄榄绿 和 浅绿色
+  ['#905A5A', '#D69A9A'], // 浅红棕色 和 浅红色
+  ['#D4AF76', '#F5E5A6']  // 浅土黄色 和 浅黄色
+];
   function getQueryParams() {
     const params = new URLSearchParams(window.location.search);
     return {
-      title: params.get('title'),
-      date: params.get('date')
+      body_color: params.get('body_color'),
+      title_color: params.get('title_color')
     };
   }
 
-  // 计算目标日期距离今天的天数
+  function getRandomMorandiColor() {
+    const randomIndex = Math.floor(Math.random() * morandiColors.length);
+    return morandiColors[randomIndex];
+  }
+
+  function setColors() {
+    const { body_color, title_color } = getQueryParams();
+    const [defaultBodyColor, defaultTitleColor] = getRandomMorandiColor();
+
+    document.body.style.backgroundColor = body_color ? body_color : defaultBodyColor;
+    document.getElementById('title').style.backgroundColor = title_color ? title_color : defaultTitleColor;
+  }
+
   function calculateDays(targetDate) {
     const now = new Date();
     const target = new Date(targetDate);
@@ -119,18 +145,18 @@
     return diffDays;
   }
 
-  // 初始化页面内容
   function initPage() {
     const { title, date } = getQueryParams();
     const days = calculateDays(date);
 
     document.getElementById('title').textContent = title ? title : '未设置标题';
     document.getElementById('days').textContent = days > 0 ? days : '0';
-    document.getElementById('target-date').textContent = `目标日: ${date}`;
   }
 
-  // 执行初始化
-  window.onload = initPage;
+  window.onload = function() {
+    setColors();
+    initPage();
+  };
 </script>
 
 </body>
