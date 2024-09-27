@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>倒计时页面</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5deb3;
+      /* background-image: url('/mnt/data/C66DDB60-DD2C-460F-A241-AF48F794289F.png'); 背景图片 */
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    .container {
+      width: 320px;
+      height: 480px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      /* justify-content: center; */
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+      border: 2px solid #ccc; /* 模仿边框 */
+    }
+
+    .title {
+
+      font-size: 22px;
+      font-weight: bold;
+      color: #333;
+      background-color: #3a87ad;
+      color: white;
+      padding: 10px 0;
+      width: 100%;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+
+    .countdown {
+      font-size: 100px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      font-family: 'Arial Black', sans-serif;
+    }
+
+    .target-date {
+      font-size: 18px;
+      color: #333;
+    }
+
+    .btn-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+    }
+
+    .btn {
+      width: 100px;
+      padding: 10px;
+      background-color: #f0ad4e;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="title" id="title">标题</div>
+  <div class="countdown" id="days">0</div>
+  <!-- <div class="target-date" id="target-date">目标日</div> -->
+  
+  <!-- <div class="btn-group">
+    <button class="btn">分享</button>
+    <button class="btn">存为图片</button>
+  </div> -->
+</div>
+
+<script>
+  // 获取 URL 中的参数
+  function getQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      title: params.get('title'),
+      date: params.get('date')
+    };
+  }
+
+  // 计算目标日期距离今天的天数
+  function calculateDays(targetDate) {
+    const now = new Date();
+    const target = new Date(targetDate);
+    const diffTime = target - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+
+  // 初始化页面内容
+  function initPage() {
+    const { title, date } = getQueryParams();
+    const days = calculateDays(date);
+
+    document.getElementById('title').textContent = title ? title : '未设置标题';
+    document.getElementById('days').textContent = days > 0 ? days : '0';
+    document.getElementById('target-date').textContent = `目标日: ${date}`;
+  }
+
+  // 执行初始化
+  window.onload = initPage;
+</script>
+
+</body>
+</html>
