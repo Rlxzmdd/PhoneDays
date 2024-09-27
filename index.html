@@ -6,7 +6,7 @@
   <title>倒计时页面</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: apple-system, BlinkMacSystemFont, Arial, sans-serif;
       margin: 0;
       padding: 0;
       display: flex;
@@ -17,25 +17,27 @@
       /* background-image: url('/mnt/data/C66DDB60-DD2C-460F-A241-AF48F794289F.png'); 背景图片 */
       background-size: cover;
       background-repeat: no-repeat;
+      margin-top: 50px;
     }
 
     .container {
       width: 320px;
-      height: 480px;
+      height: 200px;
       background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      display: flex;
+      border-radius: 16px;
+      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+      display: static;
       flex-direction: column;
-      /* justify-content: center; */
+      justify-content: center;
       align-items: center;
       padding: 20px;
       text-align: center;
-      border: 2px solid #ccc; /* 模仿边框 */
+      /* border: 2px solid #ccc; 模仿边框 */
     }
 
     .title {
-
+      /* box-shadow: 0 0px 16px rgba(0, 0, 0, 0.2); */
+      top: 0;
       font-size: 22px;
       font-weight: bold;
       color: #333;
@@ -43,16 +45,17 @@
       color: white;
       padding: 10px 0;
       width: 100%;
-      margin-bottom: 20px;
+      /* margin-bottom: 20px; */
       border-radius: 8px;
     }
 
     .countdown {
-      font-size: 100px;
+      line-height: 149px;
+      font-size: 118px;
       font-weight: bold;
       color: #333;
-      margin-bottom: 20px;
-      font-family: 'Arial Black', sans-serif;
+      /* margin-bottom: 20px; */
+      font-family:  "Times New Roman", "Baskerville", apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     }
 
     .target-date {
