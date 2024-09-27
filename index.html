@@ -12,8 +12,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding-top: 15vh;
-      height: 85vh;
+      /* padding-top: -1vh; */
+      height: 98vh;
       background-color: #C2B2A8; /* 默认沙褐色 */
       background-size: cover;
       background-repeat: no-repeat;
@@ -37,7 +37,7 @@
       font-size: 22px;
       font-weight: bold;
       /* color: white; */
-      color: #333;
+      /* color: #333; */
       background-color: #F5E9DD; /* 默认象牙白 */
       padding: 10px 0;
       width: 100%;
@@ -75,7 +75,8 @@
       title: params.get('title'),
       date: params.get('date'),
       body_color: params.get('body_color'),
-      title_color: params.get('title_color')
+      title_color: params.get('title_color'),
+      title_text_color: params.get('title_text_color')
     };
   }
 
@@ -91,30 +92,47 @@
   // 从莫兰迪色系中随机获取一组颜色
   function getRandomMorandiColor() {
     const morandiColors = [
-      ['#A89984', '#EAD2C7'], 
-      ['#B09C91', '#F0DDD4'], 
-      ['#B3A69D', '#EADCCF'], 
-      ['#A49E96', '#E6D5C7'], 
-      ['#C2B2A8', '#F5E9DD'], 
-      ['#C3ACA2', '#E8D7CC'], 
-      ['#C7B2A3', '#F1E0D0'], 
-      ['#B8A18B', '#EBD9CC'], 
-      ['#CAB2A4', '#F5E3D8'], 
-      ['#C4B2A4', '#ECDACD'], 
-      ['#B6A89C', '#E6D5C3'], 
-      ['#D1B6A9', '#F4E2D6'], 
-      ['#BFA590', '#E5CFC0'], 
-      ['#C9B1A3', '#F2D9CB'], 
-      ['#BBA697', '#EEDAC9'], 
-      ['#D2B59E', '#F8E3D0']
-    ];
+    // [页面背景颜色, 标题按钮背景色, 标题按钮文字色]
+    // 1.米灰色, 淡橘色, 白色
+    // ['#C5B8A5', '#EAD2C7', '#FFFFFF'], 
+    // 2.柔绿灰, 靛蓝色, 白色
+    ['#A8B3A3', '#465A65', '#FFFFFF'], 
+    // 3.浅杏色, 深灰蓝, 米色
+    ['#EBD8D1', '#6D6D75', '#FFFFFF'], 
+    // 4.浅粉灰, 暗墨蓝, 米白色
+    ['#D4BAB6', '#4A5568', '#FFFFFF'], 
+    // 5.淡橄榄色, 暗红褐色, 白色
+    ['#A9A691', '#8D5B4C', '#FFFFFF'], 
+    // 6.米黄色, 深靛色, 浅灰白色
+    ['#E5D3B3', '#4B5262', '#F8F8F8'], 
+    // 7.灰绿, 棕褐色, 白色
+    ['#A4AFA0', '#6E4C44', '#FFFFFF'], 
+    // 8.柔灰蓝, 棕褐色, 白色
+    ['#9BA7B1', '#5D524C', '#FFFFFF'], 
+    // 9.浅棕色, 青绿灰, 白色
+    ['#CAB8A2', '#6C8274', '#FFFFFF'], 
+    // 10.浅灰蓝, 暗紫灰, 白色
+    ['#B6C1C3', '#524859', '#FFFFFF'], 
+    // 11.沙黄色, 深青蓝, 白色
+    ['#DACBAA', '#4A5A70', '#FFFFFF'], 
+    // 12.灰褐色, 灰紫色, 米白色
+    ['#B9A593', '#776569', '#FFFFFF'], 
+    // 13.苍灰色, 暗紫色, 白色
+    ['#A5A7A1', '#57435D', '#FFFFFF'], 
+    // 14.浅米色, 海军蓝, 白色
+    ['#E7DACC', '#3D5C76', '#FFFFFF'], 
+    // 15.灰杏色, 青蓝灰, 白色
+    ['#C7B4A2', '#4F6F7C', '#FFFFFF'], 
+    // 16.浅灰紫, 棕灰色, 白色
+    ['#D4C4C3', '#6A5E5E', '#FFFFFF']
+];
     const randomIndex = Math.floor(Math.random() * morandiColors.length);
     return morandiColors[randomIndex];
   }
 
   // 初始化页面内容
   function initPage() {
-    const { title, date, body_color, title_color } = getQueryParams();
+    const { title, date, body_color, title_color,title_text_color } = getQueryParams();
     const days = calculateDays(date);
 
     // 设置标题和日期
@@ -123,9 +141,11 @@
     //document.getElementById('target-date').textContent = date ? `目标日: ${date}` : '';
 
     // 设置颜色，如果未设置则使用随机莫兰迪色系
-    const [defaultBodyColor, defaultTitleColor] = getRandomMorandiColor();
+    const [defaultBodyColor, defaultTitleColor, defaultTitleTextColor] = getRandomMorandiColor();
     document.body.style.backgroundColor = body_color ? body_color : defaultBodyColor;
     document.getElementById('title').style.backgroundColor = title_color ? title_color : defaultTitleColor;
+    document.getElementById('title').style.color = title_text_color ? title_text_color : defaultTitleTextColor;
+    document.getElementById('days').style.color = title_color ? title_color : defaultTitleColor;
   }
 
   // 执行初始化
