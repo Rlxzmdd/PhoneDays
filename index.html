@@ -18,34 +18,32 @@
       background-size: cover;
       background-repeat: no-repeat;
     }
+.container {
+  width: 320px;
+  height: 200px;
+  background-color: #fff;
+  border-radius: 28px; /* 增加到28px，接近苹果的G3曲率 */
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+  display: static;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
 
-    .container {
-      width: 320px;
-      height: 200px;
-      background-color: #fff;
-      border-radius: 16px;
-      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
-      display: static;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .title {
-      font-size: 22px;
-      font-weight: bold;
-      /* color: white; */
-      /* color: #333; */
-      background-color: #F5E9DD; /* 默认象牙白 */
-      padding: 10px 0;
-      width: 100%;
-      border-radius: 8px;
-    }
+.title {
+  font-size: 20px;
+  line-height: 25px;
+  font-weight: bold;
+  background-color: #F5E9DD;
+  padding: 10px 0;
+  width: 100%;
+  border-radius: 12px; /* 增加到12px，使圆角更柔和 */
+}
 
     .countdown {
-      line-height: 154px;
+      line-height: 134px;
       font-size: 118px;
       font-weight: bold;
       color: #333;
@@ -54,7 +52,9 @@
 
     .target-date {
       font-size: 18px;
-      color: #333;
+      font-weight: light;
+      font-family: apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      line-height: 20px;
     }
 
   </style>
@@ -64,7 +64,7 @@
 <div class="container">
   <div class="title" id="title">标题</div>
   <div class="countdown" id="days">0</div>
-  <!-- <div class="target-date" id="target-date">目标日</div> -->
+  <div class="target-date" id="target-date">目标日</div>
 </div>
 
 <script>
@@ -80,15 +80,15 @@
     };
   }
 
-  // 计算目标日期距离今天的天数
+  // 计算目标日期距离今天的天数（根据用户所在时区）
   function calculateDays(targetDate) {
     const now = new Date();
-    const target = new Date(targetDate);
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const target = new Date(new Date(targetDate).toLocaleString('en-US', { timeZone: userTimeZone }));
     const diffTime = target - now;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   }
-
   // 从莫兰迪色系中随机获取一组颜色
   function getRandomMorandiColor() {
     const morandiColors = [
@@ -138,7 +138,7 @@
     // 设置标题和日期
     document.getElementById('title').textContent = title ? title : '未设置标题';
     document.getElementById('days').textContent = days > 0 ? days : '0';
-    //document.getElementById('target-date').textContent = date ? `目标日: ${date}` : '';
+    document.getElementById('target-date').textContent = date ? `${date}` : '';
 
     // 设置颜色，如果未设置则使用随机莫兰迪色系
     const [defaultBodyColor, defaultTitleColor, defaultTitleTextColor] = getRandomMorandiColor();
@@ -146,6 +146,7 @@
     document.getElementById('title').style.backgroundColor = title_color ? title_color : defaultTitleColor;
     document.getElementById('title').style.color = title_text_color ? title_text_color : defaultTitleTextColor;
     document.getElementById('days').style.color = title_color ? title_color : defaultTitleColor;
+    document.getElementById('target-date').style.color = title_color ? title_color : defaultTitleColor;
   }
 
   // 执行初始化
