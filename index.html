@@ -71,7 +71,6 @@
     }
 
     .schedule-item {
-      line-height: 18px;
       padding: 16px;
       background-color: rgba(255, 255, 255, 0.85);
       /* 背景色稍微透明 */
@@ -93,33 +92,38 @@
 
     .schedule-title {
       font-size: 16px;
+      line-height: 20px;
+      width: 65%;
       font-weight: bold;
       align-self: flex-start;
     }
 
     .schedule-location {
+      line-height: 18px;
       font-size: 16px;
+      width: 45%;
       font-weight: bold;
       align-self: flex-start;
     }
 
     .schedule-time-top {
       font-size: 16px;
+      line-height: 20px;
+      width: 35%;
       align-self: flex-end;
       margin-top: auto;
       text-align: right;
     }
 
     .schedule-time-bottom {
+      line-height: 18px;
       font-size: 16px;
+      width: 45%;
       align-self: flex-end;
       margin-top: auto;
       text-align: right;
     }
 
-    .schedule-item div {
-      width: 48%;
-    }
   </style>
 </head>
 
@@ -319,6 +323,15 @@ function darkenColor(hex, percentage) {
 
       // 设置颜色，如果未设置则使用随机莫兰迪色系
       const [defaultBodyColor, defaultTitleColor, defaultTitleTextColor] = getRandomMorandiColor();
+      // 解析并展示日程
+      if (schedule) {
+        try {
+          const scheduleData = JSON.parse(decodeURIComponent(schedule));
+          displaySchedule(scheduleData, title_color ? title_color : defaultTitleColor);
+        } catch (error) {
+          console.error('无法解析日程数据:', error);
+        }
+      }
       document.body.style.backgroundColor = body_color ? body_color : defaultBodyColor;
       document.getElementById('title').style.backgroundColor = title_color ? title_color : defaultTitleColor;
       document.getElementById('title').style.color = title_text_color ? title_text_color : defaultTitleTextColor;
@@ -331,15 +344,7 @@ function darkenColor(hex, percentage) {
         scheduleContainer.style.marginTop = '16px';
       }
 
-      // 解析并展示日程
-      if (schedule) {
-        try {
-          const scheduleData = JSON.parse(decodeURIComponent(schedule));
-          displaySchedule(scheduleData, title_color ? title_color : defaultTitleColor);
-        } catch (error) {
-          console.error('无法解析日程数据:', error);
-        }
-      }
+
     }
 
     // 执行初始化
