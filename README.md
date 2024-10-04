@@ -44,9 +44,9 @@ This project is a simple static webpage designed to generate custom iPhone lock 
 以下是一个如何使用查询参数的示例：
 
 ```plaintext
-https://rlxzmdd.github.io/PhoneDays/?title=事件倒计时&date=2024-12-25&body_color=#E5D3B3&title_color=#4B5262&title_text_color=#F8F8F8&schedule=[{"title":"团队会议","time_top":"14:00","time_bottom":"15:00","location":"办公室"}]
+https://rlxzmdd.github.io/PhoneDays/?title=TheFinallyDay&date=2024-12-25&schedule=[{"title":"团队会议","time_top":"14:00","time_bottom":"15:00","location":"办公室"}]
 ```
-在这个示例中，页面将显示一个倒计时到 2024 年 12 月 25 日的壁纸，使用自定义的颜色方案，并为 “团队会议” 显示一个事件。
+在这个示例中，页面将显示一个倒计时到 2024 年 12 月 25 日的壁纸，并为 “团队会议” 显示一个事件。
 
 ### 自定义
 1.	颜色：如果未提供 body_color、title_color 或 title_text_color，生成器将使用随机的莫兰迪色系来设置壁纸样式。您可以指定任意 HEX 颜色格式（例如 #FFFFFF 代表白色）。
