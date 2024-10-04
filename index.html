@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,40 +8,44 @@
   <style>
     body {
       font-family: apple-system, BlinkMacSystemFont, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       /* padding-top: -1vh; */
-      height: 98vh;
-      background-color: #C2B2A8; /* 默认沙褐色 */
+      margin-top: 35vh;
+      /* min-height: 70vh; */
+      background-color: #C2B2A8;
+      /* 默认沙褐色 */
       background-size: cover;
       background-repeat: no-repeat;
     }
-.container {
-  width: 320px;
-  height: 200px;
-  background-color: #fff;
-  border-radius: 28px; /* 增加到28px，接近苹果的G3曲率 */
-  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
-  display: static;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  text-align: center;
-}
 
-.title {
-  font-size: 20px;
-  line-height: 25px;
-  font-weight: bold;
-  background-color: #F5E9DD;
-  padding: 10px 0;
-  width: 100%;
-  border-radius: 12px; /* 增加到12px，使圆角更柔和 */
-}
+    .container {
+      width: 328px;
+      min-height: 200px;
+      background-color: #fff;
+      border-radius: 28px;
+      /* 增加到28px，接近苹果的G3曲率 */
+      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+      display: static;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 20px;
+      line-height: 45px;
+      font-weight: bold;
+      background-color: #F5E9DD;
+      /* padding: 10px 0; */
+      /* margin: 10px 0; */
+      width: 100%;
+      border-radius: 12px;
+      /* 增加到12px，使圆角更柔和 */
+    }
 
     .countdown {
       line-height: 134px;
@@ -57,101 +62,290 @@
       line-height: 20px;
     }
 
+    .schedule-item:not(:first-child){
+      margin-top: 12px;
+    }
+    .schedule-container {
+      width: 100%;
+      text-align: left;
+    }
+
+    .schedule-item {
+      line-height: 18px;
+      padding: 16px;
+      background-color: rgba(255, 255, 255, 0.85);
+      /* 背景色稍微透明 */
+      border-radius: 12px;
+      box-shadow: 
+      inset 0px 0px 12px rgba(141, 141, 141, 0.08)
+        /* 内阴影 */
+        /* 0 0px 4px rgba(0, 0, 0, 0.08) */
+        ;
+      /* 外阴影变轻 */
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      transition: transform 0.3s ease;
+      border: 0.5px solid rgba(0, 0, 0, 0.05);
+      /* 轻微边框增加层次感 */
+    }
+
+    .schedule-title {
+      font-size: 16px;
+      font-weight: bold;
+      align-self: flex-start;
+    }
+
+    .schedule-location {
+      font-size: 16px;
+      font-weight: bold;
+      align-self: flex-start;
+    }
+
+    .schedule-time-top {
+      font-size: 16px;
+      align-self: flex-end;
+      margin-top: auto;
+      text-align: right;
+    }
+
+    .schedule-time-bottom {
+      font-size: 16px;
+      align-self: flex-end;
+      margin-top: auto;
+      text-align: right;
+    }
+
+    .schedule-item div {
+      width: 48%;
+    }
   </style>
 </head>
+
 <body>
 
-<div class="container">
-  <div class="title" id="title">标题</div>
-  <div class="countdown" id="days">0</div>
-  <div class="target-date" id="target-date">目标日</div>
-</div>
+  <div class="container">
+    <div class="title" id="title"></div>
+    <div class="countdown" id="days"></div>
+    <div class="target-date" id="target-date"></div>
+    <div class="schedule-container" id="schedule-container">
+    </div>
+  </div>
 
-<script>
-  // 获取 URL 中的参数
-  function getQueryParams() {
-    const params = new URLSearchParams(window.location.search);
-    return {
-      title: params.get('title'),
-      date: params.get('date'),
-      body_color: params.get('body_color'),
-      title_color: params.get('title_color'),
-      title_text_color: params.get('title_text_color')
+  <script>
+
+// 1. HEX 转 RGB
+function hexToRgb(hex) {
+  let r = 0, g = 0, b = 0;
+  if (hex.length == 4) {
+    r = parseInt(hex[1] + hex[1], 16);
+    g = parseInt(hex[2] + hex[2], 16);
+    b = parseInt(hex[3] + hex[3], 16);
+  } else if (hex.length == 7) {
+    r = parseInt(hex[1] + hex[2], 16);
+    g = parseInt(hex[3] + hex[4], 16);
+    b = parseInt(hex[5] + hex[6], 16);
+  }
+  return [r, g, b];
+}
+
+// 2. RGB 转 HSL
+function rgbToHsl(r, g, b) {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+
+  if (max === min) {
+    h = s = 0; // achromatic
+  } else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+
+  return [h, s, l];
+}
+
+// 3. HSL 转 RGB
+function hslToRgb(h, s, l) {
+  let r, g, b;
+
+  if (s === 0) {
+    r = g = b = l; // achromatic
+  } else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/3) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
     };
+
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
   }
 
-  // 计算目标日期距离今天的天数（根据用户所在时区）
-  function calculateDays(targetDate) {
-    const now = new Date();
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const target = new Date(new Date(targetDate).toLocaleString('en-US', { timeZone: userTimeZone }));
-    const diffTime = target - now;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  }
-  // 从莫兰迪色系中随机获取一组颜色
-  function getRandomMorandiColor() {
-    const morandiColors = [
-    // [页面背景颜色, 标题按钮背景色, 标题按钮文字色]
-    // 1.米灰色, 淡橘色, 白色
-    // ['#C5B8A5', '#EAD2C7', '#FFFFFF'], 
-    // 2.柔绿灰, 靛蓝色, 白色
-    ['#A8B3A3', '#465A65', '#FFFFFF'], 
-    // 3.浅杏色, 深灰蓝, 米色
-    ['#EBD8D1', '#6D6D75', '#FFFFFF'], 
-    // 4.浅粉灰, 暗墨蓝, 米白色
-    ['#D4BAB6', '#4A5568', '#FFFFFF'], 
-    // 5.淡橄榄色, 暗红褐色, 白色
-    ['#A9A691', '#8D5B4C', '#FFFFFF'], 
-    // 6.米黄色, 深靛色, 浅灰白色
-    ['#E5D3B3', '#4B5262', '#F8F8F8'], 
-    // 7.灰绿, 棕褐色, 白色
-    ['#A4AFA0', '#6E4C44', '#FFFFFF'], 
-    // 8.柔灰蓝, 棕褐色, 白色
-    ['#9BA7B1', '#5D524C', '#FFFFFF'], 
-    // 9.浅棕色, 青绿灰, 白色
-    ['#CAB8A2', '#6C8274', '#FFFFFF'], 
-    // 10.浅灰蓝, 暗紫灰, 白色
-    ['#B6C1C3', '#524859', '#FFFFFF'], 
-    // 11.沙黄色, 深青蓝, 白色
-    ['#DACBAA', '#4A5A70', '#FFFFFF'], 
-    // 12.灰褐色, 灰紫色, 米白色
-    ['#B9A593', '#776569', '#FFFFFF'], 
-    // 13.苍灰色, 暗紫色, 白色
-    ['#A5A7A1', '#57435D', '#FFFFFF'], 
-    // 14.浅米色, 海军蓝, 白色
-    ['#E7DACC', '#3D5C76', '#FFFFFF'], 
-    // 15.灰杏色, 青蓝灰, 白色
-    ['#C7B4A2', '#4F6F7C', '#FFFFFF'], 
-    // 16.浅灰紫, 棕灰色, 白色
-    ['#D4C4C3', '#6A5E5E', '#FFFFFF']
-];
-    const randomIndex = Math.floor(Math.random() * morandiColors.length);
-    return morandiColors[randomIndex];
-  }
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
 
-  // 初始化页面内容
-  function initPage() {
-    const { title, date, body_color, title_color,title_text_color } = getQueryParams();
-    const days = calculateDays(date);
+// 4. RGB 转 HEX
+function rgbToHex(r, g, b) {
+  const toHex = (c) => ('0' + c.toString(16)).slice(-2);
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
 
-    // 设置标题和日期
-    document.getElementById('title').textContent = title ? title : '未设置标题';
-    document.getElementById('days').textContent = days > 0 ? days : '0';
-    document.getElementById('target-date').textContent = date ? `${date}` : '';
+// 5. 颜色明度降低30%
+function darkenColor(hex, percentage) {
+  // 1. 将 HEX 转换为 RGB
+  const [r, g, b] = hexToRgb(hex);
 
-    // 设置颜色，如果未设置则使用随机莫兰迪色系
-    const [defaultBodyColor, defaultTitleColor, defaultTitleTextColor] = getRandomMorandiColor();
-    document.body.style.backgroundColor = body_color ? body_color : defaultBodyColor;
-    document.getElementById('title').style.backgroundColor = title_color ? title_color : defaultTitleColor;
-    document.getElementById('title').style.color = title_text_color ? title_text_color : defaultTitleTextColor;
-    document.getElementById('days').style.color = title_color ? title_color : defaultTitleColor;
-    document.getElementById('target-date').style.color = title_color ? title_color : defaultTitleColor;
-  }
+  // 2. 将 RGB 转换为 HSL
+  let [h, s, l] = rgbToHsl(r, g, b);
 
-  // 执行初始化
-  window.onload = initPage;
-</script>
+  // 3. 减少亮度 (l)
+  l = Math.max(0, l - percentage / 100);
+
+  // 4. 将 HSL 转换回 RGB
+  const [newR, newG, newB] = hslToRgb(h, s, l);
+
+  // 5. 返回新的 HEX 颜色
+  return rgbToHex(newR, newG, newB);
+}
+
+
+    // 获取 URL 中的参数
+    function getQueryParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        title: params.get('title'),
+        date: params.get('date'),
+        body_color: params.get('body_color'),
+        title_color: params.get('title_color'),
+        title_text_color: params.get('title_text_color'),
+        schedule: params.get('schedule')
+      };
+    }
+
+    // 计算目标日期距离今天的天数（根据用户所在时区）
+    function calculateDays(targetDate) {
+      const now = new Date();
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const target = new Date(new Date(targetDate).toLocaleString('en-US', { timeZone: userTimeZone }));
+      const diffTime = target - now;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    }
+
+    // 初始化日程显示
+    function displaySchedule(schedule,bg_color) {
+      const scheduleContainer = document.getElementById('schedule-container');
+      schedule.forEach(item => {
+        const scheduleItem = document.createElement('div');
+        scheduleItem.style.backgroundColor = darkenColor(bg_color,-5);
+        scheduleItem.className = 'schedule-item';
+        scheduleItem.innerHTML = `
+        <div class="schedule-title">${item.title}</div>
+        <div class="schedule-time-top">${item.time_top}</div>
+        <div class="schedule-location">${item.location}</div>
+        <div class="schedule-time-bottom">${item.time_bottom}</div>
+      `;
+        scheduleContainer.appendChild(scheduleItem);
+      });
+    }
+
+    // 从莫兰迪色系中随机获取一组颜色
+    function getRandomMorandiColor() {
+      const morandiColors = [
+        // [页面背景颜色, 标题按钮背景色, 标题按钮文字色]
+        // 1.米灰色, 淡橘色, 白色
+        // ['#C5B8A5', '#EAD2C7', '#FFFFFF'], 
+        // 2.柔绿灰, 靛蓝色, 白色
+        ['#A8B3A3', '#465A65', '#FFFFFF'],
+        // 3.浅杏色, 深灰蓝, 米色
+        ['#EBD8D1', '#6D6D75', '#FFFFFF'],
+        // 4.浅粉灰, 暗墨蓝, 米白色
+        ['#D4BAB6', '#4A5568', '#FFFFFF'],
+        // 5.淡橄榄色, 暗红褐色, 白色
+        ['#A9A691', '#8D5B4C', '#FFFFFF'],
+        // 6.米黄色, 深靛色, 浅灰白色
+        ['#E5D3B3', '#4B5262', '#F8F8F8'],
+        // 7.灰绿, 棕褐色, 白色
+        ['#A4AFA0', '#6E4C44', '#FFFFFF'],
+        // 8.柔灰蓝, 棕褐色, 白色
+        ['#9BA7B1', '#5D524C', '#FFFFFF'],
+        // 9.浅棕色, 青绿灰, 白色
+        ['#CAB8A2', '#6C8274', '#FFFFFF'],
+        // 10.浅灰蓝, 暗紫灰, 白色
+        ['#B6C1C3', '#524859', '#FFFFFF'],
+        // 11.沙黄色, 深青蓝, 白色
+        ['#DACBAA', '#4A5A70', '#FFFFFF'],
+        // 12.灰褐色, 灰紫色, 米白色
+        ['#B9A593', '#776569', '#FFFFFF'],
+        // 13.苍灰色, 暗紫色, 白色
+        ['#A5A7A1', '#57435D', '#FFFFFF'],
+        // 14.浅米色, 海军蓝, 白色
+        ['#E7DACC', '#3D5C76', '#FFFFFF'],
+        // 15.灰杏色, 青蓝灰, 白色
+        ['#C7B4A2', '#4F6F7C', '#FFFFFF'],
+        // 16.浅灰紫, 棕灰色, 白色
+        ['#D4C4C3', '#6A5E5E', '#FFFFFF']
+      ];
+      const randomIndex = Math.floor(Math.random() * morandiColors.length);
+      return morandiColors[randomIndex];
+    }
+
+    // 初始化页面内容
+    function initPage() {
+      const { title, date, body_color, title_color, title_text_color, schedule } = getQueryParams();
+      const days = calculateDays(date);
+      const scheduleContainer = document.getElementById('schedule-container');
+      // 设置标题和日期
+      document.getElementById('title').textContent = title ? title : '';
+      document.getElementById('days').textContent = days > 0 ? days : '';
+      document.getElementById('target-date').textContent = date ? `${date}` : '';
+
+      // 设置颜色，如果未设置则使用随机莫兰迪色系
+      const [defaultBodyColor, defaultTitleColor, defaultTitleTextColor] = getRandomMorandiColor();
+      document.body.style.backgroundColor = body_color ? body_color : defaultBodyColor;
+      document.getElementById('title').style.backgroundColor = title_color ? title_color : defaultTitleColor;
+      document.getElementById('title').style.color = title_text_color ? title_text_color : defaultTitleTextColor;
+      document.getElementById('days').style.color = title_color ? title_color : defaultTitleColor;
+      document.getElementById('target-date').style.color = title_color ? title_color : defaultTitleColor;
+      scheduleContainer.style.color = title_text_color ? title_text_color : defaultTitleTextColor;
+
+      // 如果 title 和 date 都不为空，则为 schedule-container 添加 margin-top 样式
+      if (date!="") {
+        scheduleContainer.style.marginTop = '16px';
+      }
+
+      // 解析并展示日程
+      if (schedule) {
+        try {
+          const scheduleData = JSON.parse(decodeURIComponent(schedule));
+          displaySchedule(scheduleData, title_color ? title_color : defaultTitleColor);
+        } catch (error) {
+          console.error('无法解析日程数据:', error);
+        }
+      }
+    }
+
+    // 执行初始化
+    window.onload = initPage;
+  </script>
 
 </body>
+
 </html>
