@@ -62,9 +62,10 @@
       line-height: 20px;
     }
 
-    .schedule-item:not(:first-child){
+    .schedule-item:not(:first-child) {
       margin-top: 12px;
     }
+
     .schedule-container {
       width: 100%;
       text-align: left;
@@ -75,55 +76,95 @@
       background-color: rgba(255, 255, 255, 0.85);
       /* 背景色稍微透明 */
       border-radius: 12px;
-      box-shadow: 
-      inset 0px 0px 12px rgba(141, 141, 141, 0.08)
+      box-shadow:
+        inset 0px 0px 12px rgba(141, 141, 141, 0.08)
         /* 内阴影 */
         /* 0 0px 4px rgba(0, 0, 0, 0.08) */
-        ;
+      ;
       /* 外阴影变轻 */
-      display: flex;
+      /* display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: flex-start; */
+      display: grid;
+      grid-template-columns: 55% 45%; /* 定义网格的列宽度 */
+      grid-template-rows: auto auto; /* 自动根据内容调整行高 */
       transition: transform 0.3s ease;
-      border: 0.5px solid rgba(0, 0, 0, 0.05);
+      /* border: 0.5px solid rgba(0, 0, 0, 0.05); */
       /* 轻微边框增加层次感 */
     }
 
     .schedule-title {
+      white-space: nowrap; /* 防止文本换行 */
+    overflow: hidden; /* 隐藏超出容器的部分 */
+    text-overflow: ellipsis; /* 超出部分用省略号代替 */
+      height: auto;
+      line-height: 18px;
       font-size: 16px;
-      line-height: 20px;
-      width: 65%;
+      /* width: 55%; */
       font-weight: bold;
-      align-self: flex-start;
+      /* align-self: flex-start; */
+      grid-column: 1; /* 占据第1列 */
+      grid-row: 1; /* 占据第1行 */
     }
 
     .schedule-location {
+      white-space: nowrap; /* 防止文本换行 */
+      overflow: hidden; /* 隐藏超出容器的部分 */
+      text-overflow: ellipsis; /* 超出部分用省略号代替 */
+      height: auto;
+      height: 18px;
       line-height: 18px;
-      font-size: 16px;
-      width: 45%;
-      font-weight: bold;
-      align-self: flex-start;
+      font-size: 12px;
+      /* width: 55%; */
+      /* font-weight: bold; */
+      /* align-self: flex-start; */
+      grid-column: 1; /* 占据第1列 */
+      grid-row: 2; /* 占据第1行 */
     }
 
     .schedule-time-top {
-      font-size: 16px;
-      line-height: 20px;
-      width: 35%;
-      align-self: flex-end;
+      height: auto;
+      line-height: 18px;
+      font-size: 14px;
+      /* width: 45%; */
+      /* align-self: flex-end; */
       margin-top: auto;
       text-align: right;
+      grid-column: 2; /* 占据第2列 */
+      grid-row: 1; /* 占据第1行 */
     }
 
     .schedule-time-bottom {
+      height: auto;
       line-height: 18px;
-      font-size: 16px;
-      width: 45%;
-      align-self: flex-end;
+      font-size: 14px;
+      /* width: 45%; */
+      /* align-self: flex-end; */
       margin-top: auto;
       text-align: right;
+      grid-column: 2; /* 占据第1列 */
+      grid-row: 2; /* 占据第1行 */
     }
 
+    .schedule-time-big {
+      line-height: 36px;
+      font-size: 36px;
+      /* width: 44%; */
+      /* align-self: flex-end; */
+      margin-top: auto;
+      text-align: right;
+      grid-column: 2;
+      grid-row: 1 / span 2; /* 跨越第一行和第二行 */
+      font-family: "Times New Roman", "Baskerville", apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+    .schedule-time-big::after {
+      content: "Days"; /* 添加额外的文字 */
+      font-size: 18px; /* 设置额外文字的字体大小 */
+      margin-left: 5px; /* 让文字与前面的数字保持一点间距 */
+      vertical-align:text-bottom; /*使额外文字与数字保持水平对齐*/
+      font-family: "Times New Roman", "Baskerville", apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
   </style>
 </head>
 
@@ -133,101 +174,100 @@
     <div class="title" id="title"></div>
     <div class="countdown" id="days"></div>
     <div class="target-date" id="target-date"></div>
-    <div class="schedule-container" id="schedule-container">
-    </div>
+    <div class="schedule-container" id="schedule-container"></div>
   </div>
 
   <script>
 
-// 1. HEX 转 RGB
-function hexToRgb(hex) {
-  let r = 0, g = 0, b = 0;
-  if (hex.length == 4) {
-    r = parseInt(hex[1] + hex[1], 16);
-    g = parseInt(hex[2] + hex[2], 16);
-    b = parseInt(hex[3] + hex[3], 16);
-  } else if (hex.length == 7) {
-    r = parseInt(hex[1] + hex[2], 16);
-    g = parseInt(hex[3] + hex[4], 16);
-    b = parseInt(hex[5] + hex[6], 16);
-  }
-  return [r, g, b];
-}
-
-// 2. RGB 转 HSL
-function rgbToHsl(r, g, b) {
-  r /= 255;
-  g /= 255;
-  b /= 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h, s, l = (max + min) / 2;
-
-  if (max === min) {
-    h = s = 0; // achromatic
-  } else {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
+    // 1. HEX 转 RGB
+    function hexToRgb(hex) {
+      let r = 0, g = 0, b = 0;
+      if (hex.length == 4) {
+        r = parseInt(hex[1] + hex[1], 16);
+        g = parseInt(hex[2] + hex[2], 16);
+        b = parseInt(hex[3] + hex[3], 16);
+      } else if (hex.length == 7) {
+        r = parseInt(hex[1] + hex[2], 16);
+        g = parseInt(hex[3] + hex[4], 16);
+        b = parseInt(hex[5] + hex[6], 16);
+      }
+      return [r, g, b];
     }
-    h /= 6;
-  }
 
-  return [h, s, l];
-}
+    // 2. RGB 转 HSL
+    function rgbToHsl(r, g, b) {
+      r /= 255;
+      g /= 255;
+      b /= 255;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
 
-// 3. HSL 转 RGB
-function hslToRgb(h, s, l) {
-  let r, g, b;
+      if (max === min) {
+        h = s = 0; // achromatic
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
 
-  if (s === 0) {
-    r = g = b = l; // achromatic
-  } else {
-    const hue2rgb = (p, q, t) => {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1/6) return p + (q - p) * 6 * t;
-      if (t < 1/3) return q;
-      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-      return p;
-    };
+      return [h, s, l];
+    }
 
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-    r = hue2rgb(p, q, h + 1/3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1/3);
-  }
+    // 3. HSL 转 RGB
+    function hslToRgb(h, s, l) {
+      let r, g, b;
 
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
+      if (s === 0) {
+        r = g = b = l; // achromatic
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 3) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+        };
 
-// 4. RGB 转 HEX
-function rgbToHex(r, g, b) {
-  const toHex = (c) => ('0' + c.toString(16)).slice(-2);
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+      }
 
-// 5. 颜色明度降低30%
-function darkenColor(hex, percentage) {
-  // 1. 将 HEX 转换为 RGB
-  const [r, g, b] = hexToRgb(hex);
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
 
-  // 2. 将 RGB 转换为 HSL
-  let [h, s, l] = rgbToHsl(r, g, b);
+    // 4. RGB 转 HEX
+    function rgbToHex(r, g, b) {
+      const toHex = (c) => ('0' + c.toString(16)).slice(-2);
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
 
-  // 3. 减少亮度 (l)
-  l = Math.max(0, l - percentage / 100);
+    // 5. 颜色明度降低30%
+    function darkenColor(hex, percentage) {
+      // 1. 将 HEX 转换为 RGB
+      const [r, g, b] = hexToRgb(hex);
 
-  // 4. 将 HSL 转换回 RGB
-  const [newR, newG, newB] = hslToRgb(h, s, l);
+      // 2. 将 RGB 转换为 HSL
+      let [h, s, l] = rgbToHsl(r, g, b);
 
-  // 5. 返回新的 HEX 颜色
-  return rgbToHex(newR, newG, newB);
-}
+      // 3. 减少亮度 (l)
+      l = Math.max(0, l - percentage / 100);
+
+      // 4. 将 HSL 转换回 RGB
+      const [newR, newG, newB] = hslToRgb(h, s, l);
+
+      // 5. 返回新的 HEX 颜色
+      return rgbToHex(newR, newG, newB);
+    }
 
 
     // 获取 URL 中的参数
@@ -254,18 +294,26 @@ function darkenColor(hex, percentage) {
     }
 
     // 初始化日程显示
-    function displaySchedule(schedule,bg_color) {
+    function displaySchedule(schedule, bg_color) {
       const scheduleContainer = document.getElementById('schedule-container');
       schedule.forEach(item => {
         const scheduleItem = document.createElement('div');
-        scheduleItem.style.backgroundColor = darkenColor(bg_color,-5);
+        scheduleItem.style.backgroundColor = darkenColor(bg_color, -5);
         scheduleItem.className = 'schedule-item';
-        scheduleItem.innerHTML = `
-        <div class="schedule-title">${item.title}</div>
-        <div class="schedule-time-top">${item.time_top}</div>
-        <div class="schedule-location">${item.location}</div>
-        <div class="schedule-time-bottom">${item.time_bottom}</div>
-      `;
+        if(item.time_big){
+            scheduleItem.innerHTML = `
+            <div class="schedule-title">${item.title}</div>
+            <div class="schedule-time-big">${item.time_big}</div>
+            <div class="schedule-location">${item.location}</div>
+          `;
+        }else{
+          scheduleItem.innerHTML = `
+            <div class="schedule-title">${item.title}</div>
+            <div class="schedule-time-top">${item.time_top}</div>
+            <div class="schedule-location">${item.location}</div>
+            <div class="schedule-time-bottom">${item.time_bottom}</div>
+          `;
+        }
         scheduleContainer.appendChild(scheduleItem);
       });
     }
@@ -340,7 +388,7 @@ function darkenColor(hex, percentage) {
       scheduleContainer.style.color = title_text_color ? title_text_color : defaultTitleTextColor;
 
       // 如果 title 和 date 都不为空，则为 schedule-container 添加 margin-top 样式
-      if (date!="") {
+      if (schedule && date != "") {
         scheduleContainer.style.marginTop = '16px';
       }
 
