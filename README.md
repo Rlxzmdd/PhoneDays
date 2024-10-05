@@ -59,8 +59,7 @@ https://rlxzmdd.github.io/PhoneDays/?title=TheFinallyDay&date=2024-12-25&schedul
 通过快捷指令进行运行，快捷指令获取链接：https://www.icloud.com/shortcuts/e3b66a9195d040a58e210acf610cb776
 
 ### 效果演示
-![image](https://github.com/user-attachments/assets/85c5389b-e9a2-411e-adf2-33be897392b0)
-<img width="391" alt="image" src="https://github.com/user-attachments/assets/7f5ee83d-95c5-45fb-bbb6-afd13bbbb2d8">
+![image](https://github.com/user-attachments/assets/85c5389b-e9a2-411e-adf2-33be897392b0)<img width="391" alt="image" src="https://github.com/user-attachments/assets/7f5ee83d-95c5-45fb-bbb6-afd13bbbb2d8"><img width="399" alt="image" src="https://github.com/user-attachments/assets/47d12483-2a0e-4a63-a940-711ebbab0a38">
 
 
 # English
