@@ -22,7 +22,7 @@
 
     .container {
       width: 328px;
-      min-height: 200px;
+      /* min-height: 200px; */
       background-color: #fff;
       border-radius: 28px;
       /* 增加到28px，接近苹果的G3曲率 */
@@ -405,9 +405,9 @@
       const days = calculateDays(date);
       const scheduleContainer = document.getElementById('schedule-container');
       // 设置标题和日期
-      document.getElementById('title').textContent = title ? title : '';
-      document.getElementById('days').textContent = days > 0 ? days : '';
-      document.getElementById('target-date').textContent = date ? `${date}` : '';
+      document.getElementById('title').textContent = title ? title : '近日待办事项';
+      document.getElementById('days').textContent = days > 0 ? days : schedule?'':'None';
+      document.getElementById('target-date').textContent = date ? `${date}` : schedule?'':'Have a good day';
 
       // 设置颜色，如果未设置则使用随机莫兰迪色系
       const [defaultBodyColor, defaultTitleColor, defaultTitleTextColor] = getRandomMorandiColor();
@@ -416,9 +416,11 @@
         try {
           const scheduleData = JSON.parse(decodeURIComponent(schedule));
           displaySchedule(scheduleData, title_color ? title_color : defaultTitleColor);
-          document.getElementById('days').style.lineHeight = "90px";
-          document.getElementById('days').style.paddingTop = "10px";
-          document.getElementById('days').style.fontSize = "90px";
+          if(date){
+            document.getElementById('days').style.lineHeight = "90px";
+            document.getElementById('days').style.paddingTop = "10px";
+            document.getElementById('days').style.fontSize = "90px";
+          }
         } catch (error) {
           console.error('无法解析日程数据:', error);
         }
