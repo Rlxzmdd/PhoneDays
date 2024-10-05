@@ -87,31 +87,42 @@
       justify-content: space-between;
       align-items: flex-start; */
       display: grid;
-      grid-template-columns: 55% 45%; /* 定义网格的列宽度 */
-      grid-template-rows: auto auto; /* 自动根据内容调整行高 */
+      grid-template-columns: 55% 45%;
+      /* 定义网格的列宽度 */
+      grid-template-rows: auto auto;
+      /* 自动根据内容调整行高 */
       transition: transform 0.3s ease;
       /* border: 0.5px solid rgba(0, 0, 0, 0.05); */
       /* 轻微边框增加层次感 */
     }
 
     .schedule-title {
-      white-space: nowrap; /* 防止文本换行 */
-    overflow: hidden; /* 隐藏超出容器的部分 */
-    text-overflow: ellipsis; /* 超出部分用省略号代替 */
+      white-space: nowrap;
+      /* 防止文本换行 */
+      overflow: hidden;
+      /* 隐藏超出容器的部分 */
+      text-overflow: ellipsis;
+      /* 超出部分用省略号代替 */
       height: auto;
       line-height: 18px;
       font-size: 16px;
       /* width: 55%; */
       font-weight: bold;
       /* align-self: flex-start; */
-      grid-column: 1; /* 占据第1列 */
-      grid-row: 1; /* 占据第1行 */
+      grid-column: 1;
+      /* 占据第1列 */
+      grid-row: 1;
+      /* 占据第1行 */
+      align-self: center;
     }
 
     .schedule-location {
-      white-space: nowrap; /* 防止文本换行 */
-      overflow: hidden; /* 隐藏超出容器的部分 */
-      text-overflow: ellipsis; /* 超出部分用省略号代替 */
+      white-space: nowrap;
+      /* 防止文本换行 */
+      overflow: hidden;
+      /* 隐藏超出容器的部分 */
+      text-overflow: ellipsis;
+      /* 超出部分用省略号代替 */
       height: auto;
       height: 18px;
       line-height: 18px;
@@ -119,8 +130,10 @@
       /* width: 55%; */
       /* font-weight: bold; */
       /* align-self: flex-start; */
-      grid-column: 1; /* 占据第1列 */
-      grid-row: 2; /* 占据第1行 */
+      grid-column: 1;
+      /* 占据第1列 */
+      grid-row: 2;
+      /* 占据第1行 */
     }
 
     .schedule-time-top {
@@ -131,8 +144,10 @@
       /* align-self: flex-end; */
       margin-top: auto;
       text-align: right;
-      grid-column: 2; /* 占据第2列 */
-      grid-row: 1; /* 占据第1行 */
+      grid-column: 2;
+      /* 占据第2列 */
+      grid-row: 1;
+      /* 占据第1行 */
     }
 
     .schedule-time-bottom {
@@ -143,8 +158,10 @@
       /* align-self: flex-end; */
       margin-top: auto;
       text-align: right;
-      grid-column: 2; /* 占据第1列 */
-      grid-row: 2; /* 占据第1行 */
+      grid-column: 2;
+      /* 占据第1列 */
+      grid-row: 2;
+      /* 占据第1行 */
     }
 
     .schedule-time-big {
@@ -155,15 +172,22 @@
       margin-top: auto;
       text-align: right;
       grid-column: 2;
-      grid-row: 1 / span 2; /* 跨越第一行和第二行 */
+      font-weight: bold;
+      grid-row: 1 / span 2;
+      /* 跨越第一行和第二行 */
       font-family: "Times New Roman", "Baskerville", apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     }
+
     .schedule-time-big::after {
-      content: "Days"; /* 添加额外的文字 */
-      font-size: 14px; /* 设置额外文字的字体大小 */
+      content: "Days";
+      /* 添加额外的文字 */
+      font-size: 14px;
+      /* 设置额外文字的字体大小 */
       margin-left: 5px;
       margin-right: 5px;
-      vertical-align: bottom; /*使额外文字与数字保持水平对齐*/
+      font-weight: bold;
+      vertical-align: bottom;
+      /*使额外文字与数字保持水平对齐*/
       font-family: "Times New Roman", "Baskerville", apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     }
   </style>
@@ -301,19 +325,28 @@
         const scheduleItem = document.createElement('div');
         scheduleItem.style.backgroundColor = darkenColor(bg_color, -5);
         scheduleItem.className = 'schedule-item';
-        if(item.time_big){
-            scheduleItem.innerHTML = `
+        if (item.time_big) {
+
+          scheduleItem.innerHTML = `
             <div class="schedule-title">${item.title}</div>
             <div class="schedule-time-big">${item.time_big}</div>
             <div class="schedule-location">${item.location}</div>
           `;
-        }else{
-          scheduleItem.innerHTML = `
+        } else {
+          if (!item.location) {
+            scheduleItem.innerHTML = `
+            <div class="schedule-title" style="white-space: wrap;grid-row: 1 / span 2;">${item.title}</div>
+            <div class="schedule-time-top">${item.time_top}</div>
+            <div class="schedule-time-bottom">${item.time_bottom}</div>
+          `;
+          } else {
+            scheduleItem.innerHTML = `
             <div class="schedule-title">${item.title}</div>
             <div class="schedule-time-top">${item.time_top}</div>
             <div class="schedule-location">${item.location}</div>
             <div class="schedule-time-bottom">${item.time_bottom}</div>
           `;
+          }
         }
         scheduleContainer.appendChild(scheduleItem);
       });
@@ -377,6 +410,9 @@
         try {
           const scheduleData = JSON.parse(decodeURIComponent(schedule));
           displaySchedule(scheduleData, title_color ? title_color : defaultTitleColor);
+          document.getElementById('days').style.lineHeight = "90px";
+          document.getElementById('days').style.paddingTop = "10px";
+          document.getElementById('days').style.fontSize = "90px";
         } catch (error) {
           console.error('无法解析日程数据:', error);
         }
