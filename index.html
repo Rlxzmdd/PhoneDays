@@ -326,12 +326,18 @@
         scheduleItem.style.backgroundColor = darkenColor(bg_color, -5);
         scheduleItem.className = 'schedule-item';
         if (item.time_big) {
-
+          if (!item.location) {
           scheduleItem.innerHTML = `
+            <div class="schedule-title" style="white-space: wrap;grid-row: 1 / span 2;">${item.title}</div>
+            <div class="schedule-time-big">${item.time_big}</div>
+          `;
+          } else {
+            scheduleItem.innerHTML = `
             <div class="schedule-title">${item.title}</div>
             <div class="schedule-time-big">${item.time_big}</div>
             <div class="schedule-location">${item.location}</div>
           `;
+          }
         } else {
           if (!item.location) {
             scheduleItem.innerHTML = `
