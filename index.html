@@ -436,18 +436,53 @@
     }
     // 调用Unsplash API获取图片
     function fetchBackgroundImage(keyword) {
-      fetch(`https://api.unsplash.com/photos/random?query=${keyword}&client_id=${apiKey}`)
-        .then(response => response.json())
-        .then(data => {
-          const imageUrl = data.urls.regular;
-          document.body.style.backgroundImage = `url(${imageUrl})`;
-          // const imageUrl = 'your_image_url_here';  // 替换为实际背景图片的URL
-          const img = new Image();
-          img.crossOrigin = 'Anonymous';  // 允许跨域加载图像
-          img.src = imageUrl;
+      // fetch(`https://api.unsplash.com/photos/random?query=${keyword}&client_id=${apiKey}`)
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     const imageUrl = data.urls.regular;
+      //     document.body.style.backgroundImage = `url(${imageUrl})`;
+      //     // const imageUrl = 'your_image_url_here';  // 替换为实际背景图片的URL
+      //     const img = new Image();
+      //     img.crossOrigin = 'Anonymous';  // 允许跨域加载图像
+      //     img.src = imageUrl;
 
-          img.onload = function () {
-            const colorThief = new ColorThief();
+      //     img.onload = function () {
+      //       const colorThief = new ColorThief();
+      //       // const dominantColor = colorThief.getColor(img);
+      //       // const rgbColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
+
+      //       const palette = colorThief.getPalette(img, 8); // 获取图片中的8种主色
+      //       const darkColors = palette.filter(color => isDarkColor(color[0], color[1], color[2]));
+      //       // 将主色调应用于title_text_color
+      //       if (darkColors.length > 0) {
+      //         const [r, g, b] = darkColors[0];
+      //         // document.getElementById('title').style.color = `rgb(${r}, ${g}, ${b})`;
+      //         document.getElementById('title').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+      //         document.getElementById('days').style.color = `rgb(${r}, ${g}, ${b})`;
+      //         document.getElementById('target-date').style.color = `rgb(${r}, ${g}, ${b})`;
+      //         document.getElementById('title').style.color = "rgba(255, 255, 255, 0.85)";
+      //         document.getElementById('schedule-container').style.color = "rgba(255, 255, 255, 0.85)";
+      //         var els = document.getElementsByClassName('schedule-item')
+      //         Array.from(els).forEach(element => {
+      //           element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+      //         });
+      //       }
+      //     };
+
+      //   })
+      //   .catch(error => console.error('Error fetching image:', error));
+
+      if (keyword.startsWith("http")) {
+        console.log("链接")
+        // 直接使用该 URL 作为背景图片
+        document.body.style.backgroundImage = `url(${keyword})`;
+
+        // 假设 colorThief 是已经初始化的对象，用于提取颜色
+        const img = new Image();
+        img.src = keyword;
+        img.crossOrigin = "Anonymous"; // 如果图片不支持跨域，这里可能会有问题
+        img.onload = function () {
+          const colorThief = new ColorThief();
             // const dominantColor = colorThief.getColor(img);
             // const rgbColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
 
@@ -467,13 +502,46 @@
                 element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
               });
             }
+        };
 
-            // document.getElementById("container").style.opacity = 0.9; // 将透明度设置为0.5
-            // changeOpacity(document.querySelector('.container'), 0.5);
-          };
+      } else {
+        // 如果 keyword 不是 URL，调用 Unsplash API 获取图片
+        fetch(`https://api.unsplash.com/photos/random?query=${keyword}&client_id=${apiKey}`)
+          .then(response => response.json())
+          .then(data => {
+            const imageUrl = data.urls.regular;
+            document.body.style.backgroundImage = `url(${imageUrl})`;
 
-        })
-        .catch(error => console.error('Error fetching image:', error));
+            const img = new Image();
+            img.src = imageUrl;
+            img.crossOrigin = "Anonymous";
+            img.onload = function () {
+              const colorThief = new ColorThief();
+            // const dominantColor = colorThief.getColor(img);
+            // const rgbColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
+
+            const palette = colorThief.getPalette(img, 8); // 获取图片中的8种主色
+            const darkColors = palette.filter(color => isDarkColor(color[0], color[1], color[2]));
+            // 将主色调应用于title_text_color
+            if (darkColors.length > 0) {
+              const [r, g, b] = darkColors[0];
+              // document.getElementById('title').style.color = `rgb(${r}, ${g}, ${b})`;
+              document.getElementById('title').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+              document.getElementById('days').style.color = `rgb(${r}, ${g}, ${b})`;
+              document.getElementById('target-date').style.color = `rgb(${r}, ${g}, ${b})`;
+              document.getElementById('title').style.color = "rgba(255, 255, 255, 0.85)";
+              document.getElementById('schedule-container').style.color = "rgba(255, 255, 255, 0.85)";
+              var els = document.getElementsByClassName('schedule-item')
+              Array.from(els).forEach(element => {
+                element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+              });
+            }
+            };
+          })
+          .catch(error => {
+            console.error('Error fetching image:', error);
+          });
+      }
     }
     // 初始化页面内容
 
@@ -524,4 +592,5 @@
   </script>
 
 </body>
+
 </html>
