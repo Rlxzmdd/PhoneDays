@@ -36,9 +36,9 @@
     .container {
       width: 328px;
       /* min-height: 200px; */
-      background-color: rgba(255, 255, 255, 0.75);
+      background-color: rgba(255, 255, 255);
 
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      /* border: 1px solid rgba(255, 255, 255, 0.4); */
       /* 半透明白色边框 */
       backdrop-filter: blur(8px) saturate(200%);
       /* 毛玻璃效果：模糊 + 饱和度提升 */
@@ -473,7 +473,6 @@
       //   .catch(error => console.error('Error fetching image:', error));
 
       if (keyword.startsWith("http")) {
-        console.log("链接")
         // 直接使用该 URL 作为背景图片
         document.body.style.backgroundImage = `url(${keyword})`;
 
@@ -570,7 +569,8 @@
       }
 
       if (keyword) {
-        fetchBackgroundImage(keyword);
+      fetchBackgroundImage(keyword);
+      document.getElementById('container').style.backgroundColor = "rgba(255, 255, 255, 0.75)";
       }
       if (schedule) {
         try {
