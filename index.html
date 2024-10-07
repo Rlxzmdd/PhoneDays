@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>iPhone15Pro壁纸倒计时生成器</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.min.js"></script>
   <style>
     body {
       font-family: apple-system, BlinkMacSystemFont, Arial, sans-serif;
@@ -17,16 +18,37 @@
       background-color: #C2B2A8;
       /* 默认沙褐色 */
       background-size: cover;
-      background-repeat: no-repeat;
+      /* 控制背景图片的显示方式 */
+      background-size: cover;
+      /* 或者 'cover'，根据需求选择 */
+
+      /* 背景自动平铺 */
+      background-repeat: repeat;
+      /* 设置为平铺模式 */
+
+      /* 背景图片位置，可以根据需求调整 */
+      background-position: center center;
+
+      /* 使背景图片始终覆盖整个屏幕 */
+      background-attachment: fixed;
     }
 
     .container {
       width: 328px;
       /* min-height: 200px; */
-      background-color: #fff;
+      background-color: rgba(255, 255, 255, 0.75);
+
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      /* 半透明白色边框 */
+      backdrop-filter: blur(8px) saturate(200%);
+      /* 毛玻璃效果：模糊 + 饱和度提升 */
+      -webkit-backdrop-filter: blur(8px) saturate(200%);
+      /* Safari 兼容性 */
+
       border-radius: 28px;
       /* 增加到28px，接近苹果的G3曲率 */
-      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 32px 64px rgba(255, 255, 255, 0.2);
+      ;
       display: static;
       flex-direction: column;
       justify-content: center;
@@ -45,6 +67,7 @@
       width: 100%;
       border-radius: 12px;
       /* 增加到12px，使圆角更柔和 */
+      color: rgba(255, 255, 255, 0.75);
     }
 
     .countdown {
@@ -194,8 +217,7 @@
 </head>
 
 <body>
-
-  <div class="container">
+  <div class="container" id="container">
     <div class="title" id="title"></div>
     <div class="countdown" id="days"></div>
     <div class="target-date" id="target-date"></div>
@@ -203,7 +225,6 @@
   </div>
 
   <script>
-
     // 1. HEX 转 RGB
     function hexToRgb(hex) {
       let r = 0, g = 0, b = 0;
@@ -304,7 +325,8 @@
         body_color: params.get('body_color'),
         title_color: params.get('title_color'),
         title_text_color: params.get('title_text_color'),
-        schedule: params.get('schedule')
+        schedule: params.get('schedule'),
+        keyword: params.get('keyword'),
       };
     }
 
@@ -323,11 +345,16 @@
       const scheduleContainer = document.getElementById('schedule-container');
       schedule.forEach(item => {
         const scheduleItem = document.createElement('div');
+
         scheduleItem.style.backgroundColor = darkenColor(bg_color, -5);
+        // if(img_color=="")
+        // else
+        //   scheduleItem.style.backgroundColor = bg_color;
+
         scheduleItem.className = 'schedule-item';
         if (item.time_big) {
           if (!item.location) {
-          scheduleItem.innerHTML = `
+            scheduleItem.innerHTML = `
             <div class="schedule-title" style="white-space: wrap;grid-row: 1 / span 2;">${item.title}</div>
             <div class="schedule-time-big">${item.time_big}</div>
           `;
@@ -399,24 +426,89 @@
       return morandiColors[randomIndex];
     }
 
+    // Unsplash API的配置
+    const apiKey = '8RkaCShsMJKpIyoLTT7pC5OI2ouILCYsAjzUkSxhqAQ'; // 将此替换为你申请的API Key
+
+    function isDarkColor(r, g, b) {
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      console.log(brightness)
+      return brightness < 200; // 亮度小于150认为是深色
+    }
+    // 调用Unsplash API获取图片
+    function fetchBackgroundImage(keyword) {
+      fetch(`https://api.unsplash.com/photos/random?query=${keyword}&client_id=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+          const imageUrl = data.urls.regular;
+          document.body.style.backgroundImage = `url(${imageUrl})`;
+          // const imageUrl = 'your_image_url_here';  // 替换为实际背景图片的URL
+          const img = new Image();
+          img.crossOrigin = 'Anonymous';  // 允许跨域加载图像
+          img.src = imageUrl;
+
+          img.onload = function () {
+            const colorThief = new ColorThief();
+            // const dominantColor = colorThief.getColor(img);
+            // const rgbColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
+
+            const palette = colorThief.getPalette(img, 8); // 获取图片中的8种主色
+            const darkColors = palette.filter(color => isDarkColor(color[0], color[1], color[2]));
+            // 将主色调应用于title_text_color
+            if (darkColors.length > 0) {
+              const [r, g, b] = darkColors[0];
+              // document.getElementById('title').style.color = `rgb(${r}, ${g}, ${b})`;
+              document.getElementById('title').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+              document.getElementById('days').style.color = `rgb(${r}, ${g}, ${b})`;
+              document.getElementById('target-date').style.color = `rgb(${r}, ${g}, ${b})`;
+              document.getElementById('title').style.color = "rgba(255, 255, 255, 0.85)";
+              document.getElementById('schedule-container').style.color = "rgba(255, 255, 255, 0.85)";
+              var els = document.getElementsByClassName('schedule-item')
+              Array.from(els).forEach(element => {
+                element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+              });
+            }
+
+            // document.getElementById("container").style.opacity = 0.9; // 将透明度设置为0.5
+            // changeOpacity(document.querySelector('.container'), 0.5);
+          };
+
+        })
+        .catch(error => console.error('Error fetching image:', error));
+    }
     // 初始化页面内容
+
     function initPage() {
-      const { title, date, body_color, title_color, title_text_color, schedule } = getQueryParams();
+      const { title, date, keyword, body_color, title_color, title_text_color, schedule } = getQueryParams();
       const days = calculateDays(date);
       const scheduleContainer = document.getElementById('schedule-container');
       // 设置标题和日期
       document.getElementById('title').textContent = title ? title : '近日待办事项';
-      document.getElementById('days').textContent = days > 0 ? days : schedule?'':'None';
-      document.getElementById('target-date').textContent = date ? `${date}` : schedule?'':'Have a good day';
+      document.getElementById('days').textContent = days > 0 ? days : schedule ? '' : 'None';
+      document.getElementById('target-date').textContent = date ? `${date}` : schedule ? '' : 'Have a good day';
 
       // 设置颜色，如果未设置则使用随机莫兰迪色系
       const [defaultBodyColor, defaultTitleColor, defaultTitleTextColor] = getRandomMorandiColor();
       // 解析并展示日程
+      document.body.style.backgroundColor = body_color ? body_color : defaultBodyColor;
+      document.getElementById('title').style.backgroundColor = title_color ? title_color : defaultTitleColor;
+      document.getElementById('days').style.color = title_color ? title_color : defaultTitleColor;
+      document.getElementById('target-date').style.color = title_color ? title_color : defaultTitleColor;
+      document.getElementById('title').style.color = title_text_color ? title_text_color : defaultTitleTextColor;
+      scheduleContainer.style.color = title_text_color ? title_text_color : defaultTitleTextColor;
+
+      // 如果 title 和 date 都不为空，则为 schedule-container 添加 margin-top 样式
+      if (schedule && date != "") {
+        scheduleContainer.style.marginTop = '16px';
+      }
+
+      if (keyword) {
+        fetchBackgroundImage(keyword);
+      }
       if (schedule) {
         try {
           const scheduleData = JSON.parse(decodeURIComponent(schedule));
           displaySchedule(scheduleData, title_color ? title_color : defaultTitleColor);
-          if(date){
+          if (date) {
             document.getElementById('days').style.lineHeight = "90px";
             document.getElementById('days').style.paddingTop = "10px";
             document.getElementById('days').style.fontSize = "90px";
@@ -425,19 +517,6 @@
           console.error('无法解析日程数据:', error);
         }
       }
-      document.body.style.backgroundColor = body_color ? body_color : defaultBodyColor;
-      document.getElementById('title').style.backgroundColor = title_color ? title_color : defaultTitleColor;
-      document.getElementById('title').style.color = title_text_color ? title_text_color : defaultTitleTextColor;
-      document.getElementById('days').style.color = title_color ? title_color : defaultTitleColor;
-      document.getElementById('target-date').style.color = title_color ? title_color : defaultTitleColor;
-      scheduleContainer.style.color = title_text_color ? title_text_color : defaultTitleTextColor;
-
-      // 如果 title 和 date 都不为空，则为 schedule-container 添加 margin-top 样式
-      if (schedule && date != "") {
-        scheduleContainer.style.marginTop = '16px';
-      }
-
-
     }
 
     // 执行初始化
@@ -445,5 +524,4 @@
   </script>
 
 </body>
-
 </html>
